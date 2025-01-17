@@ -1,0 +1,10 @@
+requests
+prompt_toolkit
+tomllib; python_version < "3.11"
+
+
+
+
+
+
+

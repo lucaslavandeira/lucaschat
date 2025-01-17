@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-
 import os
 import sys
 import time
 import requests
+from prompt_toolkit import PromptSession
 try:
     import tomllib
 except ImportError:
@@ -20,9 +20,10 @@ def main():
     url = "https://api.openai.com/v1/chat/completions"
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     messages = [{"role": "system", "content": system_prompt}]
+    session = PromptSession()
 
     while True:
-        user_input = input("> ").strip()
+        user_input = session.prompt("> ", multiline=True).strip()
         if not user_input:
             continue
         messages.append({"role": "user", "content": user_input})
