@@ -1,7 +1,11 @@
+print("Starting lucaschat")
+print("Starting lucaschat")
 #!/usr/bin/env python3
 import os
+import subprocess
 import sys
 import time
+import re
 import requests
 from prompt_toolkit import PromptSession
 from prompt_toolkit.keys import Keys
@@ -38,6 +42,9 @@ def main():
         print("\nExiting.")
         sys.exit(0)
 
+def extract_bash_command(s):
+    match = re.search(r'^<bash>(.*?)</bash>', s)
+    return match.group(1) if match else None
 
 def loop(conf, messages, session):
     key = conf["openai"]["api_key"]
@@ -59,7 +66,18 @@ def loop(conf, messages, session):
         return
     r.raise_for_status()
     resp = r.json()["choices"][0]["message"]["content"]
+    command = extract_bash_command(resp)
+    if command:
+        print(f"I am going to run this command: {command}. Proceed? Y/n")
+        confirmation = input().lower()
+        if confirmation == 'y':
+            result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            resp = result.stdout.decode()
+        else:
+            resp = "Command execution cancelled"
+
     print(resp)
+
     messages.append({"role": "assistant", "content": resp})
 
 if __name__ == "__main__":
