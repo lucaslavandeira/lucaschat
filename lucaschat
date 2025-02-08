@@ -5,7 +5,6 @@ import time
 import requests
 from prompt_toolkit import PromptSession
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.filters import HasSelection, IsDone
 from prompt_toolkit.key_binding import KeyBindings
 try:
     import tomllib
@@ -28,7 +27,6 @@ def main():
 
     @bindings.add(Keys.Enter)
     def _(event):
-        breakpoint()
         if "s-" in event.key_sequence[0].key:  # Detect Shift+Enter
             event.current_buffer.insert_text("\n")
         else:
@@ -36,8 +34,8 @@ def main():
 
     session = PromptSession(key_bindings=bindings, multiline=True)
 
-    while True:
-        try:
+    try:
+        while True:
             user_input = session.prompt("> ").strip()
             if not user_input:
                 continue
@@ -54,9 +52,9 @@ def main():
             resp = r.json()["choices"][0]["message"]["content"]
             print(resp)
             messages.append({"role": "assistant", "content": resp})
-        except Exception as e:
-            print(f"Error: {e}")
-            time.sleep(3)
+    except EOFError:
+        print("\nExiting.")
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
