@@ -41,7 +41,7 @@ def main():
         sys.exit(0)
 
 def extract_bash_command(s):
-    match = re.search(r'^<bash>(.*?)</bash>', s)
+    match = re.search(r'^<bash>(.*?)</bash>', s, re.DOTALL)
     return match.group(1) if match else None
 
 def loop(conf, messages, session):
